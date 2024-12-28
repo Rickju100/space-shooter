@@ -1,7 +1,7 @@
 """Importing the necessary libraries"""
 #Import
 import pygame
-import random
+from random import randint as rd
 from os.path import join as jn
 
 """Setting up the game"""
@@ -10,6 +10,7 @@ windowWidth, windowHeight = 1280,720
 displaySurface = pygame.display.set_mode((windowWidth, windowHeight))
 pygame.display.set_caption("Shooting Stars")
 run = True
+clock = pygame.time.Clock()
 
 """Surface"""
 surface = pygame.Surface((windowWidth, windowHeight))
@@ -19,13 +20,13 @@ x = 100
 """Importing Images"""
 #Player
 playerSurface = pygame.image.load(jn("images","player.png")).convert_alpha()    
-playerRectange = playerSurface.get_rect(center = (windowWidth//2, windowHeight//2))
+playerRectangle = playerSurface.get_rect(center = (windowWidth//2, windowHeight//2))
 playerDirection = pygame.math.Vector2()#By default 0,0
 playerSpeed = 300
 
 #Star
 starSurface = pygame.image.load(jn("images","star.png")).convert_alpha()
-starPosition = [random.randint(0, windowWidth), random.randint(0, windowHeight)]
+starPosition = [(rd(0, windowWidth), rd(0, windowHeight)) for i in range (20)]
 
 #meteor
 meteorSurface = pygame.image.load(jn("images","meteor.png")).convert_alpha()
@@ -54,8 +55,9 @@ while run:
 
     #Display onto the surface
     displaySurface.blit(meteorSurface, meteorRectangle)
-    displaySurface.blit(playerSurface, playerRectange)
     displaySurface.blit(laserSurface, laserRectangle)
-    displaySurface.blit(playerSurface, playerRectange)
+    displaySurface.blit(playerSurface, playerRectangle)
 
     pygame.display.update()
+
+pygame.quit()
