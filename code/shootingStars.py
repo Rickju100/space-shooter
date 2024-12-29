@@ -22,16 +22,14 @@ class Player(pygame.sprite.Sprite):
         self.rect.center += self.direction * self.speed * dt
 
         recentKey = pygame.key.get_just_pressed()
-        if recentKey == pygame.K_SPACE:
-            pass
+        if recentKey [pygame.K_SPACE]:
+            print("Space")
 
 class Star(pygame.sprite.Sprite):
-    def __init__(self, groups):
+    def __init__(self,groups,starPic):
         super().__init__(groups)
-        self.image= pygame.image.load(jn("images","star.png")).convert_alpha()
-        self.postion = self.image.get_frect(center = (rd(0, windowWidth), rd(0, windowHeight)))
-
-   
+        self.image = starPic
+        self.rect = self.image.get_frect(center = (rd(0, windowWidth), rd(0, windowHeight)))
 
 """Setting up the game"""
 pygame.init()
@@ -50,10 +48,10 @@ x = 100
 allSprites = pygame.sprite.Group()
 
 """Objects"""
-player = Player(allSprites)
+starPic = pygame.image.load(jn("images","star.png")).convert_alpha()
 for i in range(20):
-    Star(allSprites)
-
+    Star(allSprites,starPic)
+player = Player(allSprites)
 
 """Importing Images"""
 
