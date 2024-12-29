@@ -7,20 +7,31 @@ from os.path import join as jn
 """Clases"""
 class Player(pygame.sprite.Sprite):
     def __init__(self,groups):
-        super().__init__()
+        super().__init__(groups)
         self.image = pygame.image.load(jn("images","player.png")).convert_alpha()
-        self.rect = self.image.get_rect(center = (windowWidth//2, windowHeight//2))
+        self.rect = self.image.get_frect(center = (windowWidth/2, windowHeight/2))
         self.direction = pygame.math.Vector2()
         self.speed = 300
 
 
-    def update(self,):
-        keys = pygame.key.get_just_pressed()
-        self.direction.x = [keys[pygame.K_RIGHT]] - [keys[pygame.K_LEFT]]
-        self.direction.y = [keys[pygame.K_DOWN]] - [keys[pygame.K_UP]]
+    def update(self,dt):
+        keys = pygame.key.get_pressed()
+        self.direction.x = int(keys[pygame.K_RIGHT]) - int(keys[pygame.K_LEFT])
+        self.direction.y = int(keys[pygame.K_DOWN]) - int(keys[pygame.K_UP])
         self.direction = self.direction.normalize() if self.direction else self.direction
         self.rect.center += self.direction * self.speed * dt
 
+        recentKey = pygame.key.get_just_pressed()
+        if recentKey == pygame.K_SPACE:
+            pass
+
+class Star(pygame.sprite.Sprite):
+    def __init__(self, groups):
+        super().__init__(groups)
+        self.image= pygame.image.load(jn("images","star.png")).convert_alpha()
+        self.postion = self.image.get_frect(center = (rd(0, windowWidth), rd(0, windowHeight)))
+
+   
 
 """Setting up the game"""
 pygame.init()
@@ -40,15 +51,11 @@ allSprites = pygame.sprite.Group()
 
 """Objects"""
 player = Player(allSprites)
-
+for i in range(20):
+    Star(allSprites)
 
 
 """Importing Images"""
-
-
-#Star
-starSurface = pygame.image.load(jn("images","star.png")).convert_alpha()
-starPosition = [(rd(0, windowWidth), rd(0, windowHeight)) for i in range (20)]
 
 #meteor
 meteorSurface = pygame.image.load(jn("images","meteor.png")).convert_alpha()
@@ -73,15 +80,8 @@ while run:
 
     #Drawing the game
     displaySurface.fill("Black")
-    for pos in starPosition:
-        displaySurface.blit(starSurface, pos)
-
-    #Display onto the surface
-    displaySurface.blit(meteorSurface, meteorRectangle)
-    displaySurface.blit(laserSurface, laserRectangle)
-    displaySurface.blit(player.image, player.rect) #calling from class
-
     allSprites.draw(displaySurface)
+
     pygame.display.update()
 
 pygame.quit()
