@@ -6,11 +6,20 @@ from os.path import join as jn
 
 """Clases"""
 class Player(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self,groups):
         super().__init__()
         self.image = pygame.image.load(jn("images","player.png")).convert_alpha()
         self.rect = self.image.get_rect(center = (windowWidth//2, windowHeight//2))
+        self.direction = pygame.math.Vector2()
+        self.speed = 300
 
+
+    def update(self,):
+        keys = pygame.key.get_just_pressed()
+        self.direction.x = [keys[pygame.K_RIGHT]] - [keys[pygame.K_LEFT]]
+        self.direction.y = [keys[pygame.K_DOWN]] - [keys[pygame.K_UP]]
+        self.direction = self.direction.normalize() if self.direction else self.direction
+        self.rect.center += self.direction * self.speed * dt
 
 
 """Setting up the game"""
@@ -26,15 +35,16 @@ surface = pygame.Surface((100, 200))
 surface.fill("Orange")
 x = 100
 
+"""Sprite groups"""
+allSprites = pygame.sprite.Group()
+
 """Objects"""
-player = Player()
+player = Player(allSprites)
+
+
 
 """Importing Images"""
-#Player
-playerSurface = pygame.image.load(jn("images","player.png")).convert_alpha()    
-playerRectangle = playerSurface.get_frect(center = (windowWidth//2, windowHeight//2))
-playerDirection = pygame.math.Vector2()#By default 0,0
-playerSpeed = 100
+
 
 #Star
 starSurface = pygame.image.load(jn("images","star.png")).convert_alpha()
@@ -56,16 +66,10 @@ while run:
         if event.type == pygame.QUIT:
             run = False
     
-    #Player imputs
-    keys = pygame.key.get_pressed()
-    playerDirection.x = int(keys[pygame.K_RIGHT]) - int(keys[pygame.K_LEFT])
-    playerDirection.y = int(keys[pygame.K_DOWN]) - int(keys[pygame.K_UP])
-    if keys[pygame.K_SPACE]:
-        print("Fire kaser")
-    #Direction Normalize
-    playerDirection = playerDirection.normalize() if playerDirection else playerDirection
-    #Player movement
-    playerRectangle.center += playerDirection* playerSpeed * dt
+    
+    allSprites.update(dt)
+
+ 
 
     #Drawing the game
     displaySurface.fill("Black")
@@ -77,6 +81,7 @@ while run:
     displaySurface.blit(laserSurface, laserRectangle)
     displaySurface.blit(player.image, player.rect) #calling from class
 
+    allSprites.draw(displaySurface)
     pygame.display.update()
 
 pygame.quit()
