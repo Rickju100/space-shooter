@@ -10,7 +10,7 @@ class Player(pygame.sprite.Sprite):
         super().__init__(groups)
         self.image = pygame.image.load(jn("images","player.png")).convert_alpha()
         self.rect = self.image.get_frect(center = (windowWidth/2, windowHeight/2))
-        self.direction = pygame.math.Vector2()
+        self.direction = pygame.Vector2()
         self.speed = 300
 
         #Cooldown   
@@ -70,6 +70,8 @@ class Meteor(pygame.sprite.Sprite):
         if pygame.time.get_ticks() - self.startTimer >= self.lifeTime:
             self.kill()
 
+
+
 """Setting up the game"""
 pygame.init()
 windowWidth, windowHeight = 1280,720
@@ -94,6 +96,7 @@ allSprites = pygame.sprite.Group()
 starPic = pygame.image.load(jn("images","star.png")).convert_alpha()
 for i in range(20):
     Star(allSprites,starPic)
+    
 player = Player(allSprites)
 
 
@@ -103,25 +106,30 @@ player = Player(allSprites)
 #Meteor event
 meteorEvent= pygame.event.custom_type()
 pygame.time.set_timer(meteorEvent, 500)
+try:
+    while run:
+        dt = clock.tick()/1000
+        #Event loop
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+            if event.type == meteorEvent:
+                x,y = rd(0,windowWidth),rd(-200,-100)
+                Meteor(meteorSurface,(x,y), allSprites)
+        
+        allSprites.update(dt)
 
-while run:
-    dt = clock.tick()/1000
-    #Event loop
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            run = False
-        if event.type == meteorEvent:
-            x,y = rd(0,windowWidth),rd(-200,-100)
-            Meteor(meteorSurface,(x,y), allSprites)
     
-    allSprites.update(dt)
 
- 
+        #Drawing the game
+        displaySurface.fill("Black")
+        allSprites.draw(displaySurface)
+        
+        #Collitions
+        print(player.rect.collidepoint(100,200))
 
-    #Drawing the game
-    displaySurface.fill("Black")
-    allSprites.draw(displaySurface)
+        pygame.display.update()
 
-    pygame.display.update()
-
-pygame.quit()
+    pygame.quit()
+except Exception as e:
+    print(f"An error has ocurred! /n the erros is: {e}")
